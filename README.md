@@ -61,4 +61,4 @@ Simply open the live demo link above.
 ## Author
 
 **Mutiara Hernowo**  
-Data Science / Data Visualisation  
+Data Science - Data Visualisation  
