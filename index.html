@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Indonesian Climate and Rice Productivity (2019-2024)</title>
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/style.css" type="text/css">
+    <!-- D3.js -->
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <!-- TopoJSON for map -->
+    <script src="https://unpkg.com/topojson@3"></script>
+    <!-- Emoji for the tab -->
+     <link rel="icon" href="assets/favicon.ico">
+</head>
+
+<body>
+    <!-- Product Tour Overlay -->
+    <div id="tour-overlay" class="tour-overlay"></div>
+    
+    <!-- Product Tour Steps -->
+    <div id="tour-tooltip" class="tour-tooltip hidden">
+        <div class="tour-content">
+            <div class="tour-header">
+                <span class="tour-step"></span>
+                <button class="tour-close" id="tour-skip">Skip Tour</button>
+            </div>
+            <h3 class="tour-title"></h3>
+            <p class="tour-description"></p>
+            <div class="tour-footer">
+                <button class="tour-btn tour-prev" id="tour-prev">Previous</button>
+                <button class="tour-btn tour-next" id="tour-next">Next</button>
+            </div>
+        </div>
+        <div class="tour-arrow"></div>
+    </div>
+    <header>
+        <h1>Climate Change and Rice Productivity Indonesia (2019-2024)</h1>
+        <p class="lead">
+            This project explores how climate indicators relate to rice productivity across 10 top rice producing provinces in Indonesia from 2019 to 2024.
+        </p>
+        <!-- Province List -->
+        <div class="province-list">
+            <span class="province-badge">Aceh</span>
+            <span class="province-badge">Banten</span>
+            <span class="province-badge">Central Java</span>
+            <span class="province-badge">East Java</span>
+            <span class="province-badge">West Java</span>
+            <span class="province-badge">Lampung</span>
+            <span class="province-badge">North Sumatera</span>
+            <span class="province-badge">West Sumatera</span>
+            <span class="province-badge">South Sumatera</span>
+            <span class="province-badge">South Sulawesi</span>
+        </div>
+    </header>
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Introduction -->
+        <section id="intro" class="section">
+            <div id="ovr-insight" class="ovr-insight">
+                <!-- Insight text will be dynamically updated here -->
+            </div>
+            <!-- National Trend Line Chart -->
+            <div class="trend-chart-container">
+                <div class="trend-chart-header">
+                    <h3 class="trend-chart-title">National Trend (2019-2024)</h3>
+                    <p class="trend-chart-subtitle">Average across top 10 rice-producing provinces</p>
+                </div>
+                <svg id="trend-line-chart" width="100%" height="200"></svg>
+            </div>
+        </section>
+        <!-- Overview Chart -->
+        <section id="overview" class="section" data-tour-step="1">
+            <div class="ovr-head">
+                <div class="ovr-title">
+                    Overview Climate and Rice Productivity (2019-2024)
+                </div>
+                <div class="ovr-ctrl">
+                    <!-- Selection of Climate Indicator (x-axis) -->
+                    <label>Climate indicator</label>
+                    <select id="ovr-x">
+                        <option value="temperature">Temperature (°C)</option>
+                        <option value="rainfall">Rainfall (mm)</option>
+                        <option value="humidity">Humidity (%)</option>
+                    </select>
+                    <!-- Year Slider -->
+                    <label>Year: <span id="ovr-year-label">2019</span></label>
+                    <input id="ovr-year" type="range" min="2019" max="2024" step="1" value="2019" />
+                    <button id="ovr-play" type="button">Play</button>
+                </div>
+            </div>
+            <!-- Chart Wrap -->
+            <div id="ovr-chart-wrap">
+                <svg id="ovr-dot" height="360"></svg>
+                <div id="ovr-tip" class="tooltip hidden"></div>
+            </div>
+            <!-- Chart Footer -->
+            <div class="ovr-footer">
+                <div id="ovr-note" class="note"></div>
+                <div id="ovr-legend"></div>
+            </div>
+        </section>
+        <!-- Left Side: Sticky Panel for Narrative -->
+        <div class="sticky-panel" data-tour-step="2">
+            <div class="chapter" id="chapter-1">
+                <h2>
+                    2019: Baseline Year
+                </h2>
+                <p>
+                    In 2019, Indonesia's top rice-producing provinces established baseline climate conditions with an average temperature of 27.5°C and moderate rainfall patterns. This year serves as our reference point for understanding how climate variations affect rice cultivation across the archipelago.
+                </p>
+                <p>
+                    The map shows relatively stable productivity levels across major rice-producing regions, with provinces like East Java and Central Java leading production. Temperature and humidity levels remained within optimal ranges for rice cultivation, supporting average productivity of 55.8 ton/ha nationwide.
+                </p>
+                <p>
+                    <strong>Key Finding:</strong>
+                    Average temperature 27.5°C, productivity 55.8 ton/ha - establishing our baseline metrics
+                </p>
+            </div>
+            <div class="chapter" id="chapter-2">
+                <h2>
+                    2020: Pandemic Disruption and Climate Change
+                </h2>
+                <p>
+                    2020 brought an unprecedented dual challenge: the COVID-19 pandemic and a 15% increase in rainfall across major rice-producing provinces. As Indonesia implemented lockdown measures in March, farmers faced labor shortages during critical planting and harvesting seasons, while simultaneously adapting to wetter conditions with rainfall reaching 2,300mm in provinces like Aceh.
+                </p>
+                <p>
+                    The map reveals remarkable resilience amid crisis. Despite supply chain disruptions, restricted movement, and elevated rainfall, productivity remained strong at 55.7 ton/ha - nearly matching 2019 levels. This achievement reflects emergency government interventions, including relaxed agricultural worker mobility restrictions and accelerated distribution of farming inputs. However, humidity levels rose to 76%, requiring enhanced disease monitoring as both crop diseases and COVID-19 threatened agricultural communities.
+                </p>
+                <p>
+                    <strong>Key Finding:</strong>
+                    Pandemic + 15% rainfall increase, yet productivity maintained at 55.7 ton/ha through crisis adaptation
+                </p>
+            </div>
+            <div class="chapter" id="chapter-3">
+                <h2>
+                    2021: Compounding Crises
+                </h2>
+                <p>
+                    22021 tested Indonesia's agricultural resilience like never before. As COVID-19 cases surged through the Delta variant wave (peaking in July), extreme rainfall events brought unprecedented precipitation - over 4,200mm in Aceh, nearly double the 2019 baseline. This perfect storm of pandemic pressure and climate extremes created cascading vulnerabilities across the rice supply chain.
+                </p>
+                <p>
+                    The map highlights critical regional disparities. Transportation restrictions during emergency lockdowns delayed fertilizer distribution and equipment repairs, while waterlogging and floods damaged infrastructure in provinces with poor drainage. Labor shortages intensified as workers fell ill or faced movement restrictions. For the first time in our observation period, productivity declined to 54.9 ton/ha, revealing the limits of crisis adaptation when multiple shocks converge simultaneously.
+                </p>
+                <p>
+                    <strong>Key Finding:</strong>
+                    Extreme rainfall (4,200mm), productivity declined to 54.9 ton/ha
+                </p>
+            </div>
+            <div class="chapter" id="chapter-4">
+                <h2>
+                    2022: Recovery and Adaptation
+                </h2>
+                <p>
+                    Following 2021's extreme conditions, 2022 saw a return to more moderate rainfall patterns (around 1,900mm) across most provinces. This stabilization allowed farmers to implement adaptive strategies learned from previous years, leading to improved productivity despite ongoing climate variability.
+                </p>
+                <p>
+                    The map shows a productivity rebound to 55.4 ton/ha, demonstrating the agricultural sector's capacity for resilience. Temperature remained stable at 27.6°C, while humidity levels stayed consistent. This year highlighted the importance of climate-smart agriculture practices and improved water management systems in maintaining food security.
+                </p>
+                <p>
+                    <strong>Key Finding:</strong>
+                    Rainfall normalized, productivity rebounded to 55.4 ton/ha showing strong recovery
+                </p>
+            </div>
+            <div class="chapter" id="chapter-5">
+                <h2>
+                    2023: Rising Temperatures
+                </h2>
+                <p>
+                    2023 introduced a new climate challenge: rising temperatures. Average temperatures climbed to 27.9°C, with some provinces experiencing over 100 hot days (>30°C) throughout the year. This temperature increase, combined with reduced rainfall to 1,800mm, created stress conditions for rice cultivation.
+                </p>
+                <p>
+                    The map reveals distinct regional impacts of heat stress. Areas with better irrigation systems maintained higher productivity, while regions dependent on rainfall experienced notable yield reductions. Overall productivity declined to 55.0 ton/ha. The correlation between temperature rise and yield variation became increasingly evident, signaling the need for heat-resistant rice varieties.
+                </p>
+                <p>
+                    <strong>Key Finding:</strong>
+                    Temperature increased to 27.9°C with 100+ hot days, productivity declined to 55.0 ton/ha
+                </p>
+            </div>
+            <div class="chapter" id="chapter-6">
+                <h2>
+                    2024: Climate Adaptation in Practice
+                </h2>
+                <p>
+                    2024 represents a critical juncture where climate variability and agricultural adaptation intersect. Temperature moderated slightly to 27.5°C, while humidity increased to 77% - creating conditions that required careful water and crop management. Despite these challenges, productivity stabilized at 55.2 ton/ha.
+                </p>
+                <p>
+                    The map shows the cumulative impact of five years of climate learning. Provinces that invested in climate-resilient infrastructure, drought-resistant varieties, and improved water management demonstrated stronger yields. The data reveals that adaptation strategies are working, but continuous innovation is essential. Geographic patterns show that coastal regions face different challenges than inland areas, requiring region-specific solutions.
+                </p>
+                <p>
+                    <strong>Key Finding:</strong>
+                    Stabilization at 55.2 ton/ha despite high humidity (77%), showing successful adaptation
+                </p>
+            </div>
+        </div>
+
+        <!-- Right Side: Map Panel -->
+         <div class="map-panel">
+            <!-- Controls -->
+             <div class="controls" data-tour-step="3">
+                <!-- Main metric toggle -->
+                <div class="main-toggle">
+                    <div class="toggle-buttons">
+                        <button class="toggle-btn active" data-metric="climate">
+                            Climate
+                        </button>
+                        <button class="toggle-btn" data-metric="productivity">
+                            Rice Productivity
+                        </button>
+                    </div>
+                </div>
+
+                 <!-- Sub-menu for Climate -->
+                <div class="sub-menu" id="climate-submenu">
+                    <label class="submenu-label">Climate Indicator:</label>
+                    <div class="submenu-buttons">
+                        <button class="submenu-btn active" data-var="temperature">
+                            Temperature
+                        </button>
+                        <button class="submenu-btn" data-var="rainfall">
+                            Rainfall
+                        </button>
+                        <button class="submenu-btn" data-var="humidity">
+                            Humidity
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Sub-menu for Productivity -->
+                <div class="sub-menu hidden" id="productivity-submenu"> 
+                    <label class="submenu-label">Productivity Metric:</label>
+                    <div class="submenu-buttons">
+                        <button class="submenu-btn active" data-var="productivity">
+                            Field Productivity
+                        </button>
+                        <button class="submenu-btn" data-var="yieldArea">
+                            Yield Area
+                        </button>
+                        <button class="submenu-btn" data-var="production">
+                            Rice Production
+                        </button>
+                    </div>
+                </div>
+             </div>
+             
+             <!-- Map Container -->
+             <div class="map-inner">                
+                <!-- Map Toolbar (Year & Legend) -->
+                <div class="map-toolbar">
+                    <div class="legend"></div>
+                    <div class="year-display">
+                       <strong>Year:</strong> 
+                       <span id="year-value">2019</span>
+                    </div>
+                </div>
+                <svg id="map" data-tour-step="4"></svg>
+             </div>
+         </div>
+    </div>
+
+    <!-- Call to Action Section (Below Scrollytelling) -->
+    <section id="call-to-action" class="cta-section">
+        <div class="cta-container">
+            <h2>Call to Action: Building Climate Resilience</h2>
+            <p>
+                The data from 2019-2024 tells a compelling story: climate change is already impacting Indonesia's rice production, but adaptation is possible. From extreme rainfall in 2021 to rising temperatures in 2023, our farmers have shown remarkable resilience. However, the challenges ahead require coordinated action from all stakeholders.
+            </p>
+            <p>
+                <strong>What can we do?</strong> Policymakers must invest in climate-resilient infrastructure and early warning systems. Researchers should prioritize developing heat and flood-resistant rice varieties. Farmers need access to climate information services and sustainable farming practices. Together, we can ensure Indonesia's food security in an era of climate uncertainty.
+            </p>
+            <p>
+                Explore the interactive map above to see how climate indicators correlate with rice productivity in each province. Understanding these patterns is the first step toward building a more resilient agricultural future for Indonesia.
+            </p>
+        </div>
+    </section>
+
+    <footer>
+        <!-- Data Sources Section -->
+        <div class="data-sources">
+            <h3>Data Sources</h3>
+            <div class="sources-grid">
+                <div class="source-item">
+                    <div class="source-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"></path>
+                        </svg>
+                    </div>
+                    <div class="source-content">
+                        <h4>Climate Data</h4>
+                        <p><strong>BMKG</strong> (Badan Meteorologi, Klimatologi, dan Geofisika)</p>
+                        <p>Bureau of Meteorology, Climatology, and Geophysics</p>
+                        <p class="source-detail">Temperature, Rainfall, and Humidity data (2019-2024) accessed in August 2025</p>
+                        <a href="https://dataonline.bmkg.go.id/" target="_blank" rel="noopener">dataonline.bmkg.go.id</a>
+                    </div>
+                </div>
+                <div class="source-item">
+                    <div class="source-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M7 20h10"></path>
+                            <path d="M10 20c5.5-2.5.8-6.4 3-10"></path>
+                            <path d="M9.5 9.4c1.1.8 1.8 2.2 2.3 3.7-2 .4-3.5.4-4.8-.3-1.2-.6-2.3-1.9-3-4.2 2.8-.5 4.4 0 5.5.8z"></path>
+                            <path d="M14.1 6a7 7 0 0 0-1.1 4c1.9-.1 3.3-.6 4.3-1.4 1-1 1.6-2.3 1.7-4.6-2.7.1-4 1-4.9 2z"></path>
+                        </svg>
+                    </div>
+                    <div class="source-content">
+                        <h4>Rice Productivity Data</h4>
+                        <p><strong>BPS</strong> (Badan Pusat Statistik)</p>
+                        <p>Bureau of Statistics</p>
+                        <p class="source-detail">Rice production, yield area, and productivity statistics (2019-2024) accessed in August 2025</p>
+                        <a href="https://www.bps.go.id/id/statistics-table/3/ZDNaak0yODBUVTlGYW5sa2REUkVUVVY1YVZkbmR6MDkjMyMwMDAw/produksi-padi-sup-1--sup--dan-beras-menurut-provinsi.html?year=2024" target="_blank" rel="noopener">www.bps.go.id</a>
+                    </div>
+                </div>
+            </div>
+            <p class="data-note">
+                <em>Note: All data has been processed and normalised for visualisation purposes. Original datasets are publicly available from the respective institutions.</em>
+            </p>
+        </div>
+        <h5 style="font-size: 14px; text-align: center; padding-bottom: 20px">Author: Mutiara Hernowo | 35236043</h4>
+    </footer>
+
+    <!-- Tooltip -->
+    <div id="tooltip" class="tooltip hidden"></div>
+
+    <!-- Welcome Modal -->
+    <div id="welcome-modal" class="welcome-modal hidden">
+        <div class="welcome-content">
+            <div class="welcome-icon">👋</div>
+            <h2 class="welcome-title">Welcome to Climate & Rice Productivity Indonesia!</h2>
+            <p class="welcome-description">
+                Explore how climate indicators relate to rice productivity across Indonesia's top 10 rice-producing provinces from 2019 to 2024. 
+            </p>
+            <div class="welcome-buttons">
+                <button id="start-tour-btn" class="btn-start-tour">Take a Tour</button>
+                <button id="skip-tour-btn" class="btn-skip-tour">Skip & Explore</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="data/indonesia_map_normalised.js"></script>
+    <script src="data/combined_data.js"></script>
+    
+    <script src="js/tour.js"></script>
+    <script src="js/overview.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/map.js"></script>
+    <script src="js/scroll.js"></script>
+</body>
+</html>
