@@ -22,7 +22,7 @@ Before I developed the visualisation into an interactive website, I have done an
 - Scrollytelling layout to guide user exploration  
 - Responsive web-based implementation
 
-## Technologies Used
+## Technology Used
 
 - HTML  
 - CSS  
